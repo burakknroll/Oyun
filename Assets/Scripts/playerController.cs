@@ -7,11 +7,13 @@ public class playerController : MonoBehaviour
     private Rigidbody rb;
     public float movementSpeed = 5f;
     public float rotationSpeed = 10f;
+    private Animator animator; // animasyon iþlemleri için animatoru tanýmladýk
 
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>(); // animatore ulaþtýk
         
     }
 
@@ -22,11 +24,17 @@ public class playerController : MonoBehaviour
 
         var movementDirection = new Vector3(horizontal, 0, vertical);
 
+
+        animator.SetBool("isRunning", movementDirection != Vector3.zero);
+        // animator.SetBool("isRunning", rb.velocity != Vector3.zero); ikisi de olur
+
         if(movementDirection == Vector3.zero)
         {
             Debug.Log("Su an input yok");
             return;
         }
+
+
 
         rb.velocity = movementDirection * movementSpeed;
 
