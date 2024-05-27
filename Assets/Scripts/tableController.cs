@@ -28,23 +28,6 @@ public class tableController : MonoBehaviour
         goldObject.SetActive(true); // altýn objesini aç
     }
 
-    private void OnCollisionStay(Collision collision)
-    {
-        
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        
-    }
-
-
-
-
-
-
-
-
-
+  
 
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class truckController : MonoBehaviour
@@ -7,6 +8,7 @@ public class truckController : MonoBehaviour
     public List<GameObject> golds;
     public GameObject goldsParent;
     private int currentGold; // arabada açýk olan altýnlarýn sayýsý
+    public TextMeshProUGUI scoreText;
 
 
 
@@ -27,8 +29,9 @@ public class truckController : MonoBehaviour
         if (other.gameObject.tag != "Player") return;
         var player = other.gameObject.GetComponent<playerController>();
 
-        var gold = player.LoadGoldToTruck();
+        var gold = player.DropGoldFromHand();
         currentGold += gold;
+        scoreText.SetText("Collected Gold: " + currentGold);
 
         for (int i = 0; i < currentGold; i++) 
         {

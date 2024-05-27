@@ -16,17 +16,24 @@ public class playerController : MonoBehaviour
 
     public int CarryLimit => goldList.Count; // taþýma limitim
 
+    public Transform boneParent;
+    public bool CanMove = true;
+    public Transform spinePosition;
 
     private void Start()
     {
         baseMovementSpeed = movementSpeed;
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>(); // animatore ulaþtýk
-        
+
+        Ragdoll(false);
+
     }
 
     void Update()
     {
+        if (CanMove == false) return;
+
         float horizontal = Input.GetAxis("Horizontal");
         var vertical = Input.GetAxis("Vertical");
 
@@ -37,9 +44,9 @@ public class playerController : MonoBehaviour
         animator.SetBool("isRunning", movementDirection != Vector3.zero);
         animator.SetBool("isCarrying", carry != 0);
 
-        if(movementDirection == Vector3.zero)
+        if (movementDirection == Vector3.zero)
         {
-            Debug.Log("Su an input yok");
+            rb.velocity = Vector3.zero;
             return;
         }
 
@@ -48,7 +55,7 @@ public class playerController : MonoBehaviour
         rb.velocity = movementDirection * movementSpeed;
 
         var rotationDirection = Quaternion.LookRotation(movementDirection); //movement direction yönünü rotation olarak kaydet
-        transform.rotation = Quaternion.Slerp(transform.rotation, rotationDirection, rotationSpeed * Time.deltaTime); 
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotationDirection, rotationSpeed * Time.deltaTime);
     }
 
     public bool CollectGold()
@@ -62,7 +69,7 @@ public class playerController : MonoBehaviour
         return true;
     }
 
-    public int LoadGoldToTruck()
+    public int DropGoldFromHand()
     {
         var carryingGold = carry;
         if (carryingGold == 0) return 0;
@@ -74,4 +81,35 @@ public class playerController : MonoBehaviour
         movementSpeed = baseMovementSpeed;
         return carryingGold;
     }
+
+    public void Ragdoll(bool isActive)
+    {
+        animator.enabled = !isActive;
+        var colliders = boneParent.GetComponentsInChildren<Collider>();
+        var rigidbodies = boneParent.GetComponentsInChildren<Rigidbody>();
+
+        foreach (var coll in colliders)
+            coll.enabled = isActive;
+
+        foreach (var rig in rigidbodies)
+            rig.isKinematic = !isActive;
+
+        GetComponent<Collider>().enabled = !isActive;
+        CanMove = !isActive;
+
+        if (!isActive)
+        {
+            StartCoroutine(CloseRagdoll());
+        }
+
+    }
+
+    public IEnumerator CloseRagdoll()
+    {
+        yield return new WaitForSeconds(3f);
+        Ragdoll(false);
+        transform.position = new Vector3(spinePosition.position.x, 0, spinePosition.position.z);
+
+    }
+
 }
